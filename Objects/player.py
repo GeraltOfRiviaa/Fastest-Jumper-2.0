@@ -2,7 +2,7 @@ import pygame
 from Objects.object import Object
 from os import listdir
 from os.path import join, isfile
-from settings import GRAVITY,FPS, ANIMATION_DELAY, JUMP_STRENGTH
+from settings import GRAVITY,FPS, ANIMATION_DELAY, JUMP_STRENGTH, PLAYER_HEIGHT, PLAYER_WIDTH
 
 class Player(Object):
     def __init__(self, x, y, width, height, game):
@@ -13,10 +13,13 @@ class Player(Object):
         self.direction = "left"
         self.animation_count = 0
         self.fall_count = 0
-        self.sprites = self.load_sprite_sheets("MainCharacters", "VirtualGuy", 32,32, True)
+        self.sprites = self.load_sprite_sheets( PLAYER_WIDTH,PLAYER_HEIGHT, True,True, "MainCharacters", "VirtualGuy")
+        self.dissapear_sprites = self.load_sprite_sheets(96,96, False, False ,"MainCharacters")
         self.jump_count = 0
         self.hit = False
         self.hit_count = 0
+        self.dissapear_count = 0
+        self.dissapear = False
         
     def jump(self):
         self.velocity_y = -GRAVITY * JUMP_STRENGTH
@@ -71,6 +74,13 @@ class Player(Object):
         if self.hit_count > 45:
             self.hit = False
             self.hit_count = 0
+            
+        if self.dissapear:
+            self.dissapear_count += 1
+        
+        if self.dissapear_count > 45:
+            self.dissapear = False
+            self.dissapear_count = 0
         self.update_sprite()
     
     def draw(self):
@@ -82,6 +92,8 @@ class Player(Object):
         """Updates the sprites direction and type of the player
         """
         sprite_sheet = "idle"
+        
+        
         if self.hit:
             sprite_sheet = "hit"
         elif self.velocity_y < 0:
@@ -93,13 +105,20 @@ class Player(Object):
             sprite_sheet = "fall"
         elif self.velocity_x != 0:
             sprite_sheet = "run"
-            
-        sprite_sheet_name = sprite_sheet + "_" + self.direction
-        sprites = self.sprites[sprite_sheet_name]
+        if self.dissapear:
+            sprite_sheet = "Desappearing (96x96)"
+            sprite_sheet_name = sprite_sheet
+            sprites = self.dissapear_sprites[sprite_sheet_name]
+        else:
+            sprite_sheet_name = sprite_sheet + "_" + self.direction
+            sprites = self.sprites[sprite_sheet_name]
+        
+        #sprites = self.sprites[sprite_sheet_name]
         sprite_index = (self.animation_count // ANIMATION_DELAY) % len(sprites)
         self.sprite = sprites[sprite_index]
         self.animation_count += 1
         self.update()
+        print(sprite_sheet)
         
     def update(self):
         """Updates the rect and mask based on the player current position
@@ -120,5 +139,7 @@ class Player(Object):
         self.hit = True
         self.hit_count = 0
         
-    
+    def dissapearing(self):
+        self.dissapear = True
+        self.dissapear_count = 0
     

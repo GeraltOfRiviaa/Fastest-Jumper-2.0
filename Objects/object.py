@@ -16,7 +16,7 @@ class Object(pygame.surface.Surface):
         """
         self.game.window.blit(self.image, (self.rect.x - self.game.offset_x, self.rect.y))
     
-    def load_sprite_sheets(self, directory1, directory2, width, height, direction=False):
+    def load_sprite_sheets(self, width, height, direction=False, scale = True, *directory):
         """Takes a spritesheet and creates Sprites from each square it selects based on width and height.
         Two directories are taken in this project, because of the structure
 
@@ -30,7 +30,7 @@ class Object(pygame.surface.Surface):
         Returns:
             dict: names of the images and their surfaces
         """
-        path = join("assets", directory1, directory2)
+        path = join("assets", *directory)
         images = [file for file in listdir(path) if isfile(join(path, file))]
         
         all_sprites = {}
@@ -42,7 +42,11 @@ class Object(pygame.surface.Surface):
                 surface = pygame.Surface((width, height), pygame.SRCALPHA, 32)
                 rect = pygame.Rect(i * width, 0, width, height)
                 surface.blit(sprite_sheet, (0,0), rect)
-                sprites.append(pygame.transform.scale2x(surface))
+                
+                if scale:
+                    sprites.append(pygame.transform.scale2x(surface))
+                else:
+                    sprites.append(surface)
 
             if direction:
                 all_sprites[image.replace(".png", "") + "_right"] = sprites
@@ -50,7 +54,7 @@ class Object(pygame.surface.Surface):
             else:
                 all_sprites[image.replace(".png", "")] = sprites
                 
-        
+            
         return all_sprites
     
     def flip(self, sprites):
@@ -65,15 +69,15 @@ class Object(pygame.surface.Surface):
         """
         pass
     
-    def load_image(self, width, height, name ,  position_x, position_y , *directory):
+    def load_image(self, width, height, name ,  position_x, position_y ,scale2x = True, *directory, ):
         """Loads the block we wanna use by using only one numbers as a size, because the assets are
         made that way
 
         Args:
             size (int): size of each block
             name (string): name of the file
-            position_x (int, optional): x position of the block on the sheet. Defaults to 96.
-            position_y (int, optional): y position of the block on the sheet. Defaults to 0.
+            position_x (int, optional): x position of the block on the sheet.
+            position_y (int, optional): y position of the block on the sheet.
             *directory (tuple): directorys used to access the image
 
         Returns:
@@ -86,6 +90,7 @@ class Object(pygame.surface.Surface):
         rect = pygame.Rect(position_x, position_y, width, height)
         surface.blit(image, (0,0), rect)
         
-        
-        
-        return pygame.transform.scale2x(surface)
+        if scale2x:
+            return pygame.transform.scale2x(surface)
+        else:
+            return surface

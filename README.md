@@ -2,4 +2,4 @@
 
 To **play** music, uncomment this line 
 
-**`self.music = pygame.mixer.music.play()`
+`self.music = pygame.mixer.music.play()`
