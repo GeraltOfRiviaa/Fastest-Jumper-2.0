@@ -115,7 +115,17 @@ class Game():
         
         for object in check:
             if object and object.name == "fire":
+                if collide_left:
+                    self.player.move_left(10)
+                if collide_left:
+                    self.player.move_right(10)
                 self.player.hit_self()
+            if object and object.name == "trophy":
+                self.player.dissapearing()
+                if collide_left:
+                    self.player.move_left(30)
+                if collide_left:
+                    self.player.move_right(30)
                 
             
     def handle_vertical_collision(self, velocity_y, objects):
@@ -196,12 +206,12 @@ class Game():
                               Platform(7 * PLATFORM_SIZE , HEIGHT_SCREEN - (PLATFORM_SIZE * 4), PLATFORM_SIZE, PLATFORM_SIZE, self), # 7x 4y
                               Platform(1 * PLATFORM_SIZE , HEIGHT_SCREEN - (PLATFORM_SIZE * 6), PLATFORM_SIZE, PLATFORM_SIZE, self), # 2x 3y
                               Platform(2 * PLATFORM_SIZE , HEIGHT_SCREEN - (PLATFORM_SIZE * 6), PLATFORM_SIZE, PLATFORM_SIZE, self), # 3x 3y
-                              Platform(6 * PLATFORM_SIZE , HEIGHT_SCREEN - (PLATFORM_SIZE * 7), PLATFORM_SIZE, PLATFORM_SIZE, self), # 4x 3y
-                              Platform(7 * PLATFORM_SIZE , HEIGHT_SCREEN - (PLATFORM_SIZE * 7), PLATFORM_SIZE, PLATFORM_SIZE, self) # 4x 3y
+                              Platform(6 * PLATFORM_SIZE , HEIGHT_SCREEN - (PLATFORM_SIZE * 7), PLATFORM_SIZE, PLATFORM_SIZE, self), # 6x 7y
+                              Platform(7 * PLATFORM_SIZE , HEIGHT_SCREEN - (PLATFORM_SIZE * 7), PLATFORM_SIZE, PLATFORM_SIZE, self) # 6x 7y
                             ]
         
-        #trophy = Trophy(7 * PLATFORM_SIZE,HEIGHT_SCREEN - (PLATFORM_SIZE * 8), 64,64, self)
+        trophy = Trophy((7 * PLATFORM_SIZE) + 16,HEIGHT_SCREEN - (PLATFORM_SIZE * 8) + (64/2), 64,64, self)
         
-        objects = [*floor, *fires, *floating_platforms]
+        objects = [*floor, *fires, *floating_platforms, trophy]
         
         return objects, background, background_image, fires
