@@ -50,7 +50,7 @@ class Object(pygame.surface.Surface):
             else:
                 all_sprites[image.replace(".png", "")] = sprites
                 
-        print(all_sprites)
+        
         return all_sprites
     
     def flip(self, sprites):
@@ -64,3 +64,28 @@ class Object(pygame.surface.Surface):
         """Empty function used to update sprites of an object
         """
         pass
+    
+    def load_image(self, width, height, name ,  position_x, position_y , *directory):
+        """Loads the block we wanna use by using only one numbers as a size, because the assets are
+        made that way
+
+        Args:
+            size (int): size of each block
+            name (string): name of the file
+            position_x (int, optional): x position of the block on the sheet. Defaults to 96.
+            position_y (int, optional): y position of the block on the sheet. Defaults to 0.
+            *directory (tuple): directorys used to access the image
+
+        Returns:
+            Surface()
+        """
+        
+        path = join("assets", *directory, name)
+        image = pygame.image.load(path).convert_alpha()
+        surface = pygame.Surface((width, height), pygame.SRCALPHA, 32)
+        rect = pygame.Rect(position_x, position_y, width, height)
+        surface.blit(image, (0,0), rect)
+        
+        
+        
+        return pygame.transform.scale2x(surface)

@@ -1,12 +1,11 @@
 import pygame
-import os
-import math
 from os import listdir
 from os.path import join, isfile
 from settings import WIDTH_SCREEN, HEIGHT_SCREEN, FPS, PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_VELOCITY, PLATFORM_SIZE, SCROLL_AREA_WIDTH
 from Objects.player import Player
 from Objects.platform import Platform
 from Objects.fire import Fire
+from Objects.trophy import Trophy
 
 class Game():
     """Basic game object, that other files can reference.
@@ -15,24 +14,14 @@ class Game():
     def __init__(self):
         pygame.display.set_caption("Fastest Jumper")
         self.window = pygame.display.set_mode((WIDTH_SCREEN, HEIGHT_SCREEN))
+        pygame.SCALED
         self.running = True
         self.clock = pygame.time.Clock()
-        self.background, self.background_image = self.get_background("Yellow.png")
-        
-        self.player = Player(100, 100, PLAYER_WIDTH, PLAYER_HEIGHT, self)
-        
-        self.fire = Fire(100, HEIGHT_SCREEN - PLATFORM_SIZE - 64, 16 ,32, self)
-        self.fire.on()
-        
-        self.block = [Platform(0 , HEIGHT_SCREEN - PLATFORM_SIZE, PLATFORM_SIZE, self)]
-        
-        self.floor = [Platform(i * PLATFORM_SIZE, HEIGHT_SCREEN - PLATFORM_SIZE, PLATFORM_SIZE, self) 
-                      for i in range(-WIDTH_SCREEN // PLATFORM_SIZE, WIDTH_SCREEN * 2 // PLATFORM_SIZE)]
-        
-        self.objects = [*self.floor, Platform(0, HEIGHT_SCREEN - PLATFORM_SIZE * 2, PLATFORM_SIZE, self),
-                        Platform(PLATFORM_SIZE * 3, HEIGHT_SCREEN - PLATFORM_SIZE * 4, PLATFORM_SIZE, self), self.fire]
+        self.player = Player(60, 700, PLAYER_WIDTH, PLAYER_HEIGHT, self)
         self.offset_x = 0
-        
+        self.objects, self.background, self.background_image, self.fires = self.level_one()
+        self.music = pygame.mixer.music.load("C:/Users/SAM/Desktop/Fastest Jumper 2.0/Music/track1.mp3")
+        #self.music = pygame.mixer.music.play()
         
         
         
@@ -46,13 +35,14 @@ class Game():
             
             self.handle_events()
             self.player.loop()
-            self.fire.update_sprite()
             self.handle_move()
             self.draw()
             
-            if ((self.player.rect.right - self.offset_x >= WIDTH_SCREEN - SCROLL_AREA_WIDTH) and self.player.velocity_x > 0) or (
-                (self.player.rect.left - self.offset_x <= SCROLL_AREA_WIDTH) and self.player.velocity_x < 0):
-                self.offset_x += self.player.velocity_x
+            
+            #Background scrolling
+            #if ((self.player.rect.right - self.offset_x >= WIDTH_SCREEN - SCROLL_AREA_WIDTH) and self.player.velocity_x > 0) or (
+            #   (self.player.rect.left - self.offset_x <= SCROLL_AREA_WIDTH) and self.player.velocity_x < 0):
+            #   self.offset_x += self.player.velocity_x
             
     def handle_events(self):
         """Checks if certain events occured and acts upon them.
@@ -92,6 +82,8 @@ class Game():
     def draw(self):
         """Draws every asset in the game
         """
+        for fire in self.fires:
+            fire.update_sprite()
         
         for tile in self.background:
             self.window.blit(self.background_image,tile)
@@ -172,3 +164,44 @@ class Game():
         self.player.update()
         
         return collided_object
+    
+    def level_one(self):
+        
+        background, background_image = self.get_background("Yellow.png")
+        
+        fires = [Fire((8 * PLATFORM_SIZE) + 51 , HEIGHT_SCREEN - PLATFORM_SIZE - 64, 16 ,32, self), # 8x 2y
+                 Fire((9 * PLATFORM_SIZE) + 51 , HEIGHT_SCREEN - PLATFORM_SIZE - 64, 16 ,32, self), # 9x 2y
+                 Fire((3 * PLATFORM_SIZE), HEIGHT_SCREEN - (PLATFORM_SIZE * 3) - 64, 16 ,32, self),
+                 Fire((2 * PLATFORM_SIZE), HEIGHT_SCREEN - (PLATFORM_SIZE * 6) - 64, 16 ,32, self)
+                
+                ] 
+        for fire in fires:
+            fire.on()
+        
+        floor = [Platform( 20, HEIGHT_SCREEN - PLATFORM_SIZE, PLATFORM_SIZE, PLATFORM_SIZE, self),
+                Platform((1 * PLATFORM_SIZE ) + 20, HEIGHT_SCREEN - PLATFORM_SIZE,PLATFORM_SIZE, PLATFORM_SIZE, self),
+                Platform((2 * PLATFORM_SIZE ) + 20, HEIGHT_SCREEN - PLATFORM_SIZE, PLATFORM_SIZE, PLATFORM_SIZE, self),
+                Platform((3 * PLATFORM_SIZE ) + 20, HEIGHT_SCREEN - PLATFORM_SIZE, PLATFORM_SIZE, PLATFORM_SIZE, self),
+                Platform((7 * PLATFORM_SIZE ) + 20, HEIGHT_SCREEN - PLATFORM_SIZE, PLATFORM_SIZE, PLATFORM_SIZE, self),
+                Platform((8 * PLATFORM_SIZE ) + 20, HEIGHT_SCREEN - PLATFORM_SIZE, PLATFORM_SIZE, PLATFORM_SIZE, self),
+                Platform((9 * PLATFORM_SIZE ) + 20, HEIGHT_SCREEN - PLATFORM_SIZE, PLATFORM_SIZE, PLATFORM_SIZE, self),
+                ]
+        #-WIDTH_SCREEN // PLATFORM_SIZE, WIDTH_SCREEN * 2 // PLATFORM_SIZE
+        
+        
+        #creating individual platforms that make up a level
+        floating_platforms = [Platform(2 * PLATFORM_SIZE , HEIGHT_SCREEN - (PLATFORM_SIZE * 3), PLATFORM_SIZE, PLATFORM_SIZE, self),# 3x 3y
+                              Platform(3 * PLATFORM_SIZE , HEIGHT_SCREEN - (PLATFORM_SIZE * 3), PLATFORM_SIZE, PLATFORM_SIZE, self), # 4x 3y
+                              Platform(6 * PLATFORM_SIZE , HEIGHT_SCREEN - (PLATFORM_SIZE * 4), PLATFORM_SIZE, PLATFORM_SIZE, self), # 6x 4y
+                              Platform(7 * PLATFORM_SIZE , HEIGHT_SCREEN - (PLATFORM_SIZE * 4), PLATFORM_SIZE, PLATFORM_SIZE, self), # 7x 4y
+                              Platform(1 * PLATFORM_SIZE , HEIGHT_SCREEN - (PLATFORM_SIZE * 6), PLATFORM_SIZE, PLATFORM_SIZE, self), # 2x 3y
+                              Platform(2 * PLATFORM_SIZE , HEIGHT_SCREEN - (PLATFORM_SIZE * 6), PLATFORM_SIZE, PLATFORM_SIZE, self), # 3x 3y
+                              Platform(6 * PLATFORM_SIZE , HEIGHT_SCREEN - (PLATFORM_SIZE * 7), PLATFORM_SIZE, PLATFORM_SIZE, self), # 4x 3y
+                              Platform(7 * PLATFORM_SIZE , HEIGHT_SCREEN - (PLATFORM_SIZE * 7), PLATFORM_SIZE, PLATFORM_SIZE, self) # 4x 3y
+                            ]
+        
+        #trophy = Trophy(7 * PLATFORM_SIZE,HEIGHT_SCREEN - (PLATFORM_SIZE * 8), 64,64, self)
+        
+        objects = [*floor, *fires, *floating_platforms]
+        
+        return objects, background, background_image, fires
