@@ -44,9 +44,8 @@ class Level_One():
                               Platform(7 * PLATFORM_SIZE , HEIGHT_SCREEN - (PLATFORM_SIZE * 7), PLATFORM_SIZE, PLATFORM_SIZE, self) # 6x 7y
                             ]
         
-        trophy = Trophy((2 * PLATFORM_SIZE),HEIGHT_SCREEN - (PLATFORM_SIZE * 2) + (64/2), 64,64, self)
-        #for testing use this: trophy = Trophy(7 * PLATFORM_SIZE) + 16,HEIGHT_SCREEN - (PLATFORM_SIZE * 8) + (64/2), 64,64, self
-        
+        #for testing use this:trophy = Trophy((2 * PLATFORM_SIZE),HEIGHT_SCREEN - (PLATFORM_SIZE * 2) + (64/2), 64,64, self)
+        trophy = Trophy((7 * PLATFORM_SIZE) + 16,HEIGHT_SCREEN - (PLATFORM_SIZE * 8) + (64/2), 64,64, self)
         objects = [*floor, *fires, *floating_platforms, trophy]
         
         return objects, background, background_image, fires
