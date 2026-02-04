@@ -44,10 +44,11 @@ class Player(Object):
         Args:
             velocity (int/float/double): speed of the player
         """
-        self.velocity_x = -velocity
-        if self.direction != "left":
-            self.direction = "left"
-            self.animation_count = 0
+        if self.game.player_hits <= 2 and self.game.player_won == False:
+            self.velocity_x = -velocity
+            if self.direction != "left":
+                self.direction = "left"
+                self.animation_count = 0
             
     def move_right(self, velocity):
         """Changes the velocity of the player and the direction he's facing
@@ -55,15 +56,18 @@ class Player(Object):
         Args:
             velocity (int/float/double): speed of the player
         """
-        self.velocity_x = velocity
-        if self.direction != "right":
-            self.direction = "right"
-            self.animation_count = 0
+        if self.game.player_hits <= 2 and self.game.player_won == False:
+            self.velocity_x = velocity
+            if self.direction != "right":
+                self.direction = "right"
+                self.animation_count = 0
     
     def loop(self):
         """Applies the gravity and updates movement and sprites for the Player()
         """
+        
         self.velocity_y += min(1, (self.fall_count/ FPS) * GRAVITY)
+        
         self.move(self.velocity_x,self.velocity_y)
         
         self.fall_count += 1
@@ -75,18 +79,12 @@ class Player(Object):
             self.hit = False
             self.hit_count = 0
             
-        if self.dissapear:
-            self.dissapear_count += 1
-        
-        if self.dissapear_count > 45:
-            self.dissapear = False
-            self.dissapear_count = 0
         self.update_sprite()
     
     def draw(self):
         """Draws the sprite of the player on screen
         """
-        self.game.window.blit(self.sprite, (self.rect.x - self.game.offset_x, self.rect.y))
+        self.game.window.blit(self.sprite, (self.rect.x, self.rect.y))
         
     def update_sprite(self):
         """Updates the sprites direction and type of the player
@@ -118,7 +116,6 @@ class Player(Object):
         self.sprite = sprites[sprite_index]
         self.animation_count += 1
         self.update()
-        print(sprite_sheet)
         
     def update(self):
         """Updates the rect and mask based on the player current position
@@ -138,8 +135,3 @@ class Player(Object):
     def hit_self(self):
         self.hit = True
         self.hit_count = 0
-        
-    def dissapearing(self):
-        self.dissapear = True
-        self.dissapear_count = 0
-    

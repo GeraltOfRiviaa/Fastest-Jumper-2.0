@@ -9,6 +9,5 @@ class Trophy(Object):
         trophy = self.load_image(width, height, "End (Idle).png", 0,0, False, "Items", "Checkpoints", "End")
         self.image.blit(trophy, (0,0))
         self.mask = pygame.mask.from_surface(self.image)
-        print(self.load_image(width, height, "End (Idle).png", 0,0,False, "Items", "Checkpoints", "End").get_size())
         
         #C:\Users\SAM\Desktop\Fastest Jumper 2.0\assets\Items\Checkpoints\End\End (Idle).png

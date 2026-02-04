@@ -10,11 +10,13 @@ class Object(pygame.surface.Surface):
         self.image = pygame.Surface((width, height), pygame.SRCALPHA)
         self.name = name
         self.game = game
+        self.x = x
+        self.y = y
     
     def draw(self):
         """Empty function used for drawing the object
         """
-        self.game.window.blit(self.image, (self.rect.x - self.game.offset_x, self.rect.y))
+        self.game.window.blit(self.image, (self.rect.x , self.rect.y))
     
     def load_sprite_sheets(self, width, height, direction=False, scale = True, *directory):
         """Takes a spritesheet and creates Sprites from each square it selects based on width and height.
