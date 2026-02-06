@@ -2,13 +2,12 @@ import pygame
 from os.path import join
 from settings import WIDTH_SCREEN, HEIGHT_SCREEN, FPS, PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_VELOCITY, PLATFORM_SIZE, SCROLL_AREA_WIDTH
 from Objects.player import Player
-from Objects.platform import Platform
-from Objects.fire import Fire
-from Objects.trophy import Trophy
 from Menus.death import Death
 from Menus.win import Win
 from Menus.start import Start
 from Levels.first_level import Level_One
+from Menus.esc import ESC
+from Menus.button import Button
 class Game():
     """Basic game object, that other files can reference.
     All the basic loops, event handling happens here
@@ -25,6 +24,7 @@ class Game():
         self.start_menu = Start(self)
         self.win_menu = Win(self)
         self.level_one = Level_One(self)
+        self.esc_menu = ESC(self)
         self.objects, self.background, self.background_image, self.fires = self.level_one.load_level_assets()
         pygame.mixer.music.load("C:/Users/SAM/Desktop/Fastest Jumper 2.0/Music/track1.mp3")
         self.player_hits = 0
@@ -33,7 +33,6 @@ class Game():
         self.player_won = False
         self.music = True
         pygame.mixer.music.play()
-        
         
         
         
@@ -66,6 +65,9 @@ class Game():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and self.player.jump_count < 2:
                     self.player.jump()
+                if event.key == pygame.K_ESCAPE and self.menu_state == "play":
+                        self.buttons = "esc"
+                        
             
             if self.buttons == "death":
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -76,6 +78,11 @@ class Game():
             if self.buttons == "win":
                 if event.type == pygame.MOUSEBUTTONDOWN:
                         self.win_menu.resolve_buttons()
+            
+            if self.buttons == "esc":
+                if event.type == pygame.MOUSEBUTTONDOWN:            
+                        self.esc_menu.resolve_buttons()
+            
         
     def get_background(self, name):
         """Loads a square that contains the background image
@@ -118,16 +125,18 @@ class Game():
                 object.draw()
             
             if self.player.rect.y > HEIGHT_SCREEN:
-                self.death_menu.draw()
                 self.buttons = "death"
-                
+                self.death_menu.draw()
             if self.player_hits > 2:
                 self.buttons = "death"
                 self.death_menu.draw()
             
             if self.player_won:
-                self.buttons = "death"
+                self.buttons = "win"
                 self.win_menu.draw()
+            
+            if self.buttons == "esc":
+                self.esc_menu.draw()
             
             self.player.draw()
             
@@ -160,7 +169,7 @@ class Game():
                     self.player.move(0,-40)
                 if collide_right:
                     self.player.move_left(40)
-                    self.player.move(0,-40)
+                    pass
                 self.player.hit_self()
                 self.player_hits += 1
                 

@@ -12,7 +12,6 @@ class Fire(Object):
         self.mask = pygame.mask.from_surface(self.image)
         
         self.animation_name = "off"
-        self.animation_count = 0 
         
     def on(self):
         self.animation_name = "on"

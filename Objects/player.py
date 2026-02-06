@@ -11,15 +11,15 @@ class Player(Object):
         self.velocity_y = 0
         self.mask = None
         self.direction = "left"
-        self.animation_count = 0
+        
         self.fall_count = 0
         self.sprites = self.load_sprite_sheets( PLAYER_WIDTH,PLAYER_HEIGHT, True,True, "MainCharacters", "VirtualGuy")
-        self.dissapear_sprites = self.load_sprite_sheets(96,96, False, False ,"MainCharacters")
+        #self.dissapear_sprites = self.load_sprite_sheets(96,96, False, False ,"MainCharacters")
         self.jump_count = 0
         self.hit = False
         self.hit_count = 0
-        self.dissapear_count = 0
-        self.dissapear = False
+        #self.dissapear_count = 0
+        #self.dissapear = False
         
     def jump(self):
         self.velocity_y = -GRAVITY * JUMP_STRENGTH
@@ -103,15 +103,14 @@ class Player(Object):
             sprite_sheet = "fall"
         elif self.velocity_x != 0:
             sprite_sheet = "run"
-        if self.dissapear:
-            sprite_sheet = "Desappearing (96x96)"
-            sprite_sheet_name = sprite_sheet
-            sprites = self.dissapear_sprites[sprite_sheet_name]
-        else:
-            sprite_sheet_name = sprite_sheet + "_" + self.direction
-            sprites = self.sprites[sprite_sheet_name]
-        
-        #sprites = self.sprites[sprite_sheet_name]
+        #if self.dissapear:
+        #    sprite_sheet = "Desappearing (96x96)"
+        #    sprite_sheet_name = sprite_sheet
+        #    sprites = self.dissapear_sprites[sprite_sheet_name]
+        #else:
+        #    
+        sprite_sheet_name = sprite_sheet + "_" + self.direction
+        sprites = self.sprites[sprite_sheet_name]
         sprite_index = (self.animation_count // ANIMATION_DELAY) % len(sprites)
         self.sprite = sprites[sprite_index]
         self.animation_count += 1
@@ -135,3 +134,12 @@ class Player(Object):
     def hit_self(self):
         self.hit = True
         self.hit_count = 0
+        
+    def reset(self):
+        super().reset()
+        self.animation_count = 0
+        self.direction = "right"
+        self.jump_count = 0
+        self.fall_count = 0
+        self.velocity_x = 0
+        self.velocity_y = 0

@@ -9,10 +9,7 @@ class Win(Menu):
         super().__init__(game)
         self.game = game
         self.image.set_alpha(200)
-        self.buttons = [Button((WIDTH_SCREEN/2) - 21,(HEIGHT_SCREEN/2) - 22, self.load_image(21,22, "Restart.png",0,0, 2,"Menu", "Buttons")),
-                        Button(10,10, self.load_image(15,16, "Close.png",0,0, 3,"Menu", "Buttons")),
-                        Button(900,30, self.load_image(21,22, "Volume.png",0,0, 3,"Menu", "Buttons"))]
-
+        
     def draw(self):
         """
         Draws the death menu on the screen

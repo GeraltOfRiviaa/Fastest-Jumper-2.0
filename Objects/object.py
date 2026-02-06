@@ -12,6 +12,9 @@ class Object(pygame.surface.Surface):
         self.game = game
         self.x = x
         self.y = y
+        self.spawn_x = x
+        self.spawn_y = y
+        self.animation_count = 0
     
     def draw(self):
         """Empty function used for drawing the object
@@ -96,3 +99,8 @@ class Object(pygame.surface.Surface):
             return pygame.transform.scale2x(surface)
         else:
             return surface
+        
+    def reset(self):
+        self.x = self.spawn_x
+        self.y = self.spawn_y
+        self.animation_count = 0
