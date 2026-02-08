@@ -7,3 +7,4 @@
 35.59 death
 47.16 death
 10.28 win
+12.96 win
