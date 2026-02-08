@@ -13,13 +13,29 @@ class Player(Object):
         self.direction = "left"
         
         self.fall_count = 0
-        self.sprites = self.load_sprite_sheets( PLAYER_WIDTH,PLAYER_HEIGHT, True,True, "MainCharacters", "VirtualGuy")
+        self.sprites = self.load_sprite_sheets( PLAYER_WIDTH,PLAYER_HEIGHT,True,True, "MainCharacters", "VirtualGuy")
         #self.dissapear_sprites = self.load_sprite_sheets(96,96, False, False ,"MainCharacters")
         self.jump_count = 0
         self.hit = False
         self.hit_count = 0
         #self.dissapear_count = 0
         #self.dissapear = False
+        self.start_x = x
+        self.start_y = y
+        self.on_ground = False
+        
+    def will_hit(self):
+        self.move(self.velocity_x, 0)
+        self.update()
+        ground = False
+        for object in self.game.objects:
+            if pygame.sprite.collide_mask(self, object):
+                ground = True
+                break
+        
+        self.move(-self.velocity_x, 0)
+        self.update()
+        return ground
         
     def jump(self):
         self.velocity_y = -GRAVITY * JUMP_STRENGTH
@@ -27,6 +43,7 @@ class Player(Object):
         self.jump_count += 1
         if self.jump_count == 1:
             self.fall_count = 0
+        self.game.soundboard.jump()
     
     def move(self, velocity_x, velocity_y):
         """Moves the player based on velocity
@@ -49,7 +66,6 @@ class Player(Object):
             if self.direction != "left":
                 self.direction = "left"
                 self.animation_count = 0
-            
     def move_right(self, velocity):
         """Changes the velocity of the player and the direction he's facing
 
@@ -61,15 +77,16 @@ class Player(Object):
             if self.direction != "right":
                 self.direction = "right"
                 self.animation_count = 0
+
     
     def loop(self):
         """Applies the gravity and updates movement and sprites for the Player()
         """
+        #if not self.will_hit():
+        #    self.velocity_y += min(1, (self.fall_count/ FPS) * GRAVITY)
         
         self.velocity_y += min(1, (self.fall_count/ FPS) * GRAVITY)
-        
         self.move(self.velocity_x,self.velocity_y)
-        
         self.fall_count += 1
         
         if self.hit:
@@ -126,7 +143,8 @@ class Player(Object):
         self.fall_count = 0
         self.velocity_y = 0
         self.jump_count = 0
-    
+        self.on_ground = True
+        #self.game.soundboard.jump_landing()
     def hit_head(self):
         self.count = 0
         self.velocity_y *= -1
@@ -136,10 +154,21 @@ class Player(Object):
         self.hit_count = 0
         
     def reset(self):
-        super().reset()
+        self.rect.x = self.start_x
+        self.rect.y = self.start_y
         self.animation_count = 0
         self.direction = "right"
         self.jump_count = 0
         self.fall_count = 0
         self.velocity_x = 0
         self.velocity_y = 0
+        self.game.player_hits = 0
+        self.game.player_won = False
+        self.on_ground = False
+        self.game.time_saved = False
+    
+    def gravity_off(self):
+        return None
+    
+    def gravity_on(self):
+        self.velocity_y += min(1, (self.fall_count/ FPS) * GRAVITY)

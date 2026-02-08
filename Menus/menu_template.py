@@ -1,7 +1,7 @@
 import pygame
 from os import listdir
 from os.path import join, isfile
-from settings import WIDTH_SCREEN, HEIGHT_SCREEN
+from settings import WIDTH_SCREEN, HEIGHT_SCREEN, FPS
 from Menus.font import Font
 from Menus.button import Button
 
@@ -13,7 +13,8 @@ class Menu():
         self.image = pygame.Surface((WIDTH_SCREEN, HEIGHT_SCREEN)).convert_alpha()
         self.color = pygame.Color(0,0,0)
         self.image.fill(self.color)
-        self.font = Font(self.game, 10)
+        self.h1_font = Font(self.game, 10)
+        self.h2_font = Font(self.game, 5)
         self.buttons = self.load_buttons()
     def load_image(self, width, height, name ,  position_x, position_y ,scale, *directory, ):
         """Loads an image
@@ -40,14 +41,21 @@ class Menu():
         else:
             return surface
         
-    def display_text(self, text, x, y):
+    def display_text(self, text, x, y, size):
         """
         Displays a text on the screen
         """
-        i = 0
-        for letter in text.lower():
-            self.game.window.blit(self.font.letters[letter], (x + (80*i),y))
-            i += 1
+        match size:
+            case "h1":
+                i = 0
+                for letter in text.lower():
+                    self.game.window.blit(self.h1_font.letters[letter], (x + (80*i),y))
+                    i += 1
+            case "h2":
+                i = 0
+                for letter in text.lower():
+                    self.game.window.blit(self.h2_font.letters[letter], (x + (40*i),y))
+                    i += 1
 
     def resolve_buttons(self):
         """Resolves all button presses
@@ -55,30 +63,34 @@ class Menu():
         for _ in self.buttons:
             if self.buttons["Close.png"].pressed():
                 self.game.running = False
+                self.game.soundboard.click()
             if self.buttons["Volume.png"].pressed():
-                if self.game.music == True:
-                    pygame.mixer.music.stop()
-                    self.game.music = False
-                elif self.game.music == False:
-                    self.game.music = True
-                    pygame.mixer.music.play()
+                self.game.soundboard.click()
             if self.buttons["Back.png"].pressed():
-                pass
+                self.game.soundboard.click()
             if self.buttons["Achievements.png"].pressed():
-                pass
+                self.game.soundboard.click()
             if self.buttons["Levels.png"].pressed():
-                pass
+                self.game.soundboard.click()
             if self.buttons["Next.png"].pressed():
-                pass
+                self.game.soundboard.click()
             if self.buttons["Play.png"].pressed():
                 self.game.menu_state = "play"
                 self.game.buttons = None
+                self.game.soundboard.click()
+                self.game.timer.start()
             if self.buttons["Previous.png"].pressed():
-                pass
+                self.game.soundboard.click()
             if self.buttons["Restart.png"].pressed():
-                pass
+                self.game.menu_state = "play"
+                self.game.player.reset()
+                self.game.buttons = None
+                self.game.soundboard.click()
+                self.game.soundboard.music_on()
+                self.game.soundboard.reset()
+                self.game.timer.start()
             if self.buttons["Settings.png"].pressed():
-                pass
+                self.game.soundboard.click()
     def load_buttons(self):
         """Loads every button in the game
         """
@@ -86,7 +98,7 @@ class Menu():
         buttons = {} 
         for file in listdir(path_one) :
             if isfile(join(path_one, file)):
-                buttons[file] =  Button(0,0, self.load_image(21,22, file,0,0, 2,"Menu", "Buttons"), self.game)
+                buttons[file] =  Button(0,0, self.load_image(21,22, file,0,0, 3,"Menu", "Buttons"), self.game)
 
         path_two = "C:/Users/SAM/Desktop/Fastest Jumper 2.0/assets/Menu/Buttons/Smaller"
         for file in listdir(path_two) :

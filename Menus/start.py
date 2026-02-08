@@ -13,8 +13,6 @@ class Start(Menu):
         self.close.rect.topleft = (0,0)
         self.play = self.buttons["Play.png"]
         self.play.rect.topleft = (WIDTH_SCREEN/2 - 21,HEIGHT_SCREEN/2 + 21)
-        self.volume = self.buttons["Volume.png"]
-        self.volume.rect.topleft = (958,1)
         
     def draw(self):
         """
@@ -24,6 +22,5 @@ class Start(Menu):
                 self.game.window.blit(self.background_image,tile)
         self.close.draw(self.game.window)
         self.play.draw(self.game.window)
-        self.volume.draw(self.game.window)
-        self.display_text("Fastest", (WIDTH_SCREEN/2) - (4*WORD_SPACING) - 40 , 200)
-        self.display_text("Jumper",(WIDTH_SCREEN/2) - (2*WORD_SPACING), 300)
+        self.display_text("Fastest", (WIDTH_SCREEN/2) - (4*WORD_SPACING) - 40 , 200, "h1")
+        self.display_text("Jumper",(WIDTH_SCREEN/2) - (2*WORD_SPACING), 300, "h1")

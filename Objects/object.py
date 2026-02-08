@@ -100,7 +100,3 @@ class Object(pygame.surface.Surface):
         else:
             return surface
         
-    def reset(self):
-        self.x = self.spawn_x
-        self.y = self.spawn_y
-        self.animation_count = 0

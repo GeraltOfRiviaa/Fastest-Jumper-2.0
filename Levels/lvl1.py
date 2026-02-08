@@ -5,7 +5,7 @@ from Objects.fire import Fire
 from Objects.trophy import Trophy
 
 
-class Level_One():
+class Lvl1():
     def __init__(self, game):
         self.game = game
         self.window = game.window

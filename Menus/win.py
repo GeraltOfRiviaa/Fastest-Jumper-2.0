@@ -10,28 +10,21 @@ class Win(Menu):
         self.game = game
         self.image.set_alpha(200)
         
+        self.close = self.buttons["Close.png"]
+        self.close.rect.topleft = (0,0)
+        self.restart = self.buttons["Restart.png"]
+        self.restart.rect.topleft = (WIDTH_SCREEN/2 - 21,HEIGHT_SCREEN/2 + 21)
+        
     def draw(self):
         """
         Draws the death menu on the screen
         """
         self.game.window.blit(self.image, (0,0))
-        i = 0
-        for button in self.buttons:
-            self.game.window.blit(button.image, (button.x, button.y))
-            self.buttons[i].draw(self.game.window)
-            i += 1
-        self.display_text("You", (WIDTH_SCREEN/2) - (3*80) - 40 , 200)
-        self.display_text("Won",(WIDTH_SCREEN/2), 200)
+        self.close.draw(self.game.window)
+        self.restart.draw(self.game.window)
+        
+        self.display_text(format(self.game.sorted_winning_times[0]), (WIDTH_SCREEN/2) - (4*80), 100, "h2")
+        self.display_text("You", (WIDTH_SCREEN/2) - (3*80) - 40 , 200, "h1")
+        self.display_text("Won",(WIDTH_SCREEN/2), 200, "h1")
 
-    def resolve_buttons(self):
-            if self.buttons[1].pressed():
-                self.game.running = False
-            if self.buttons[0].pressed():
-                self.game.menu_state = "play"
-            if self.buttons[2].pressed():
-                if self.game.music == True:
-                    pygame.mixer.music.stop()
-                    self.game.music = False
-                elif self.game.music == False:
-                    self.game.music = True
-                    pygame.mixer.music.play()
+    

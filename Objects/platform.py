@@ -9,7 +9,7 @@ class Platform(Object):
     """
     def __init__(self, x, y, width, height, game):
         super().__init__(x, y, width, height, game)
-        block = self.load_image(width,height, "Terrain.png",96,0, True, "Terrain" )
+        block = self.load_image(width,height, "Terrain.png",96,0, True,"Terrain" )
         self.image.blit(block, (0,0))
         self.mask = pygame.mask.from_surface(self.image)
         

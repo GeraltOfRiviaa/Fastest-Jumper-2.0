@@ -1,13 +1,18 @@
 import pygame
 from os.path import join
+import math
 from settings import WIDTH_SCREEN, HEIGHT_SCREEN, FPS, PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_VELOCITY, PLATFORM_SIZE, SCROLL_AREA_WIDTH
 from Objects.player import Player
 from Menus.death import Death
 from Menus.win import Win
 from Menus.start import Start
-from Levels.first_level import Level_One
+from Levels.lvl1 import Lvl1
+from Levels.lvl2 import Lvl2
+from Levels.lvl3 import Lvl3
 from Menus.esc import ESC
-from Menus.button import Button
+from soundboard import Soundboard
+from Menus.font import Font
+from timer import Timer
 class Game():
     """Basic game object, that other files can reference.
     All the basic loops, event handling happens here
@@ -18,24 +23,30 @@ class Game():
         pygame.SCALED
         self.running = True
         self.clock = pygame.time.Clock()
-        self.player = Player(60, 700, PLAYER_WIDTH, PLAYER_HEIGHT, self)
+        self.player = Player(60, HEIGHT_SCREEN - (PLATFORM_SIZE*2), PLAYER_WIDTH, PLAYER_HEIGHT, self)
         self.offset_x = 0
         self.death_menu = Death(self)
         self.start_menu = Start(self)
         self.win_menu = Win(self)
-        self.level_one = Level_One(self)
+        self.level_one = Lvl1(self)
+        self.level_two = Lvl2(self)
+        self.level_three = Lvl3(self)
         self.esc_menu = ESC(self)
         self.objects, self.background, self.background_image, self.fires = self.level_one.load_level_assets()
-        pygame.mixer.music.load("C:/Users/SAM/Desktop/Fastest Jumper 2.0/Music/track1.mp3")
         self.player_hits = 0
         self.buttons = "start"
         self.menu_state = "start"
         self.player_won = False
-        self.music = True
-        pygame.mixer.music.play()
-        
-        
-        
+        self.soundboard = Soundboard(self)
+        self.soundboard.set_volume_all(0.3)
+        self.soundboard.set_volume("jump_landing_short.wav", 1)
+        self.soundboard.set_volume("jump.wav", 0.1)
+        self.time_saved = False
+        self.sorted_death_times = []
+        self.sorted_winning_times = []
+        self.timer = Timer(self)
+        self.start_time = 0
+        self.font = Font(self, 3)
     def main(self):
         """Main game loop that sets the FPS for the game and calls all the handling functions,
         calls for the loop() in Player() and calls for draw()
@@ -43,10 +54,8 @@ class Game():
         while self.running:
             
             self.clock.tick(FPS)
-            
+            self.timer.update()
             self.handle_events()
-            
-            
             self.player.loop()
             self.handle_move()
             self.draw()
@@ -61,14 +70,19 @@ class Game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
-            
+            pressed = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and self.player.jump_count < 2:
                     self.player.jump()
                 if event.key == pygame.K_ESCAPE and self.menu_state == "play":
-                        self.buttons = "esc"
-                        
-            
+                        self.esc_menu.check_pressed()
+                        if pressed:
+                            self.timer.proceed()
+                            pressed = False
+                        else:
+                            self.timer.stop()
+                            pressed = True
+
             if self.buttons == "death":
                 if event.type == pygame.MOUSEBUTTONDOWN:
                         self.death_menu.resolve_buttons()
@@ -82,8 +96,9 @@ class Game():
             if self.buttons == "esc":
                 if event.type == pygame.MOUSEBUTTONDOWN:            
                         self.esc_menu.resolve_buttons()
+                        
             
-        
+            
     def get_background(self, name):
         """Loads a square that contains the background image
         and then returns the image and positions of each
@@ -111,10 +126,13 @@ class Game():
     def draw(self):
         """Draws every asset in the game
         """
+        
+        
         if self.menu_state == "start":
             self.start_menu.draw()
         
         elif self.menu_state == "play":
+            self.soundboard.music_on()
             for fire in self.fires:
                 fire.update_sprite()
             
@@ -125,20 +143,56 @@ class Game():
                 object.draw()
             
             if self.player.rect.y > HEIGHT_SCREEN:
+                if not self.time_saved:
+                    self.save_time("death")
+                    self.time_saved = True
+                    self.sorted_death_times = self.sort_time(self.sort_death_time())
+
                 self.buttons = "death"
                 self.death_menu.draw()
+                if not self.soundboard.game_over_played:
+                    self.soundboard.game_over()
+                    self.soundboard.game_over_played = True
+                self.soundboard.music_off()
+                self.display_timer(format(self.get_latest_time()), 1000 - (20 * 5.2),1)
             if self.player_hits > 2:
+                if not self.time_saved:
+                    self.save_time("death")
+                    self.time_saved = True
+                    self.sorted_death_times = self.sort_time(self.sort_death_time())
+                    
+
                 self.buttons = "death"
                 self.death_menu.draw()
+                if not self.soundboard.game_over_played:
+                    self.soundboard.game_over()
+                    self.soundboard.game_over_played = True
+                self.soundboard.music_off()
+                self.display_timer(format(self.get_latest_time()), 1000 - (20 * 5.2),1)
             
             if self.player_won:
+                if not self.time_saved:
+                    self.save_time("win")
+                    self.time_saved = True
+                    self.sorted_winning_times = self.sort_time(self.sort_win_time())
+                    
                 self.buttons = "win"
                 self.win_menu.draw()
+                self.soundboard.music_off()
+                if not self.soundboard.trophy_played:
+                    self.soundboard.trophy()
+                    self.soundboard.trophy_played = True 
             
             if self.buttons == "esc":
+                
                 self.esc_menu.draw()
-            
+                self.display_timer(format(self.timer.current_time), 1000 - (20 * 5.2),1)
+            if self.buttons == "death" or self.buttons == "win" or self.buttons == "esc":
+                self.sorted_winning_times = self.sort_time(self.sort_win_time())
+            else:
+                self.display_timer("{:.2f}".format(self.timer.current_time), 1000 - (20 * 5.2),1)
             self.player.draw()
+            
             
         pygame.display.update()
         
@@ -149,16 +203,15 @@ class Game():
         keys = pygame.key.get_pressed()
         
         self.player.velocity_x = 0
-        collide_left = self.handle_horizontal_collision( -PLAYER_VELOCITY * 2, self.objects)
-        collide_right = self.handle_horizontal_collision( PLAYER_VELOCITY * 2 ,self.objects)
         
+        collide_left, collide_right, *vertical_collide = self.collided()
         
         if keys[pygame.K_a] and not collide_left:
             self.player.move_left(PLAYER_VELOCITY)
         if keys[pygame.K_d] and not collide_right:
             self.player.move_right(PLAYER_VELOCITY) 
         
-        vertical_collide = self.handle_vertical_collision(self.player.velocity_y, self.objects)
+        
         
         check = [collide_left, collide_right, *vertical_collide]
         
@@ -224,3 +277,97 @@ class Game():
         self.player.update()
         
         return collided_object
+
+    def save_time(self, state):
+        
+        with open("run_times.txt", "a") as file:
+            file.write("{:.2f}".format(self.timer.current_time) + " " + state)
+            file.write("\n")
+        
+
+    def read_time(self):
+        times = []
+        temp = []
+        string = ""
+        with open("run_times.txt", "r") as file:
+            #reads lines from the file and appends them to times list
+            for char in file.read():
+                if not char == '\n':
+                    temp.append(char)
+                    
+                if char == '\n':
+                    for char in temp:
+                        string += char
+                    times.append(string)
+                    string = ""
+                    temp.clear()
+        return times
+    
+    def sort_win_time(self):
+        times = self.read_time()
+        win_times = []
+        for time in times:
+            if not time.find("win") == -1:
+                temp = time.split(' ')
+                string = temp[0]
+                win_times.append(string)
+                string = ""
+        return win_times
+    
+    def sort_death_time(self):
+        times = self.read_time()
+        death_times = []
+        for time in times:
+            if not time.find("death") == -1:
+                temp = time.split(' ')
+                
+                string = temp[0]
+                death_times.append(string)
+                string = ""
+        return death_times
+    
+    def sort_time(self, times, ascending = True):
+        if ascending:
+            for i in range(len(times) - 1):
+                swapped = False
+                for j in range(len(times) - i - 1):
+                    if times[j] > times[j+1]:
+                        times[j], times[j+1] = times[j+1], times[j]
+                        swapped = True
+                if not swapped:
+                    break
+        else:
+            for i in range(len(times) - 1):
+                swapped = False
+                for j in range(len(times) - i - 1):
+                    if times[j] < times[j+1]:
+                        times[j], times[j+1] = times[j+1], times[j]
+                        swapped = True
+                if not swapped:
+                    break
+        return times
+
+    def collided(self):
+        collide_left = self.handle_horizontal_collision( -PLAYER_VELOCITY * 2, self.objects)
+        collide_right = self.handle_horizontal_collision( PLAYER_VELOCITY * 2 ,self.objects)
+        vertical_collide = self.handle_vertical_collision(self.player.velocity_y, self.objects)
+        collision = [collide_left, collide_right, *vertical_collide]
+        return collision
+    def get_latest_time(self):
+        times = []
+        for time in self.read_time():
+                temp = time.split(' ')
+                string = temp[0]
+                times.append(string)
+                string = ""
+        return times[-1]
+    
+    def display_timer(self, text, x, y):
+        """
+        Displays a timer on the screen
+        """
+        
+        i = 0
+        for letter in text.lower():
+            self.window.blit(self.font.letters[letter], (x + (20*i),y))
+            i += 1

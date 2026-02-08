@@ -45,7 +45,6 @@ class Font():
     def get_font(self, text, y):
         letters = {}
         i = 0
-        j = 0
         for letter in text:
             letters[letter] = self.load_image(8,10, "Text (White) (8x10).png" ,0 + (i * 8), y, self.scale, "Menu", "Text")
             i += 1

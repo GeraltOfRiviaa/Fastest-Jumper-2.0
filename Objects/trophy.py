@@ -6,7 +6,7 @@ from os.path import join, isfile
 class Trophy(Object):
     def __init__(self, x, y,width, height, game, name=None):
         super().__init__(x,y,width,height,game,"trophy")
-        trophy = self.load_image(width, height, "End (Idle).png", 0,0, False, "Items", "Checkpoints", "End")
+        trophy = self.load_image(width, height, "End (Idle).png",0,0, False,"Items", "Checkpoints", "End")
         self.image.blit(trophy, (0,0))
         self.mask = pygame.mask.from_surface(self.image)
         
