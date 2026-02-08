@@ -47,6 +47,7 @@ class Game():
         self.timer = Timer(self)
         self.start_time = 0
         self.font = Font(self, 3)
+        
     def main(self):
         """Main game loop that sets the FPS for the game and calls all the handling functions,
         calls for the loop() in Player() and calls for draw()
@@ -82,6 +83,9 @@ class Game():
                         else:
                             self.timer.stop()
                             pressed = True
+                        if self.soundboard.music_paused:
+                            self.soundboard.music_resume()
+                            self.soundboard.music_paused = False
 
             if self.buttons == "death":
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -132,7 +136,10 @@ class Game():
             self.start_menu.draw()
         
         elif self.menu_state == "play":
-            self.soundboard.music_on()
+            if not self.soundboard.music_playing:
+                self.soundboard.music_on()
+                self.soundboard.music_playing = True
+            
             for fire in self.fires:
                 fire.update_sprite()
             
@@ -168,6 +175,7 @@ class Game():
                     self.soundboard.game_over()
                     self.soundboard.game_over_played = True
                 self.soundboard.music_off()
+                self.soundboard.music_playing = False
                 self.display_timer(format(self.get_latest_time()), 1000 - (20 * 5.2),1)
             
             if self.player_won:
@@ -178,14 +186,16 @@ class Game():
                     
                 self.buttons = "win"
                 self.win_menu.draw()
-                self.soundboard.music_off()
                 if not self.soundboard.trophy_played:
                     self.soundboard.trophy()
                     self.soundboard.trophy_played = True 
-            
+                self.soundboard.music_off()
+                self.soundboard.music_playing = False
             if self.buttons == "esc":
                 
                 self.esc_menu.draw()
+                self.soundboard.music_pause()
+                self.soundboard.music_paused = True
                 self.display_timer(format(self.timer.current_time), 1000 - (20 * 5.2),1)
             if self.buttons == "death" or self.buttons == "win" or self.buttons == "esc":
                 self.sorted_winning_times = self.sort_time(self.sort_win_time())

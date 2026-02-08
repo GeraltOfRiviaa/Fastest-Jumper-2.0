@@ -10,6 +10,8 @@ class Soundboard():
         pygame.mixer.music.set_volume(0.5)
         self.game_over_played = False
         self.trophy_played = False
+        self.music_playing = False
+        self.music_paused = False
         
     def load_sounds(self):
         path = "C:/Users/SAM/Desktop/Fastest Jumper 2.0/Sound_Effects/WAV"
@@ -43,11 +45,13 @@ class Soundboard():
     def running(self):
         self.sounds["running.wav"].play()
     def music_off(self):
-        #pygame.mixer.music.stop()
-        pass
+        pygame.mixer.music.stop()
     def music_on(self):
-        pass
-        #pygame.mixer.music.play()
+        pygame.mixer.music.play()
     def reset(self):
         self.game_over_played = False
         self.trophy_played = False
+    def music_resume(self):
+        pygame.mixer.music.unpause()
+    def music_pause(self):
+        pygame.mixer.music.pause()
