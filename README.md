@@ -11,6 +11,13 @@ Simple PyGame platformer
 5. Run these: `python -m venv. venv` then `& .\.venv\Scripts\activate` then `pip install -r requirements.txt`
 6. Run main.py `py main.py`
 
+## How to switch levels
+
+As of right now there is no way to click your way to another level. To change levels (only 2 are working) you have to head to game.py and at line
+
+`self.objects, self.background, self.background_image, self.fires = self.level_one.load_level_assets()`
+
+just change `self.level_one.load_level_assets()` to `self.level_two.load_level_assets()` ar restart the game
 
 ## Features
 

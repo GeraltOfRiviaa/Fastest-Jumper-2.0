@@ -32,7 +32,7 @@ class Game():
         self.level_two = Lvl2(self)
         self.level_three = Lvl3(self)
         self.esc_menu = ESC(self)
-        self.objects, self.background, self.background_image, self.fires = self.level_one.load_level_assets()
+        self.objects, self.background, self.background_image, self.fires = self.level_two.load_level_assets()
         self.player_hits = 0
         self.buttons = "start"
         self.menu_state = "start"
