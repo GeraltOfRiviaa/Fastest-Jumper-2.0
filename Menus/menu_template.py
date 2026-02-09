@@ -1,7 +1,7 @@
 import pygame
 from os import listdir
 from os.path import join, isfile
-from settings import WIDTH_SCREEN, HEIGHT_SCREEN, FPS
+from settings import WIDTH_SCREEN, HEIGHT_SCREEN, PLATFORM_SIZE
 from Menus.font import Font
 from Menus.button import Button
 
@@ -70,38 +70,31 @@ class Menu():
             
         if self.buttons["Back.png"].pressed():
             self.game.soundboard.click()
-            self.game.menu_state = self.game.previus_menu
-            self.game.buttons = self.game.previus_buttons
-            
+            self.game.go_back()
         if self.buttons["Achievements.png"].pressed():
             self.game.soundboard.click()
             
         if self.buttons["Levels.png"].pressed():
             self.game.soundboard.click()
-            self.game.previus_menu = self.game.menu_state
-            self.game.previus_buttons = self.game.buttons
-            self.game.menu_state = "pick_level"
-            self.game.buttons = "pick"
+            self.game.navigate_to_menu("pick_level", "pick")
             
         if self.buttons["Next.png"].pressed():
             self.game.soundboard.click()
             
         if self.buttons["Play.png"].pressed():
-            self.game.previus_buttons = self.game.buttons
-            self.game.menu_state = "play"
-            self.game.buttons = None
+            self.game.navigate_to_menu("play", None)
             self.game.soundboard.click()
             self.game.timer.start()
             if self.game.soundboard.music_paused:
                         self.game.soundboard.music_resume()
                         self.game.soundboard.music_paused = False
             self.game.player.gravity = True
-            
+            self.game.player.reset()
         if self.buttons["Previous.png"].pressed():
             self.game.soundboard.click()
             
         if self.buttons["Restart.png"].pressed():
-            self.game.previus_buttons = self.game.buttons
+            
             self.game.menu_state = "play"
             self.game.player.reset()
             self.game.buttons = None
@@ -118,14 +111,20 @@ class Menu():
             self.game.soundboard.click()
             self.game.objects, self.game.background_image, self.game.fires = self.game.level_one.load_level_assets()
             self.menu_state = "play"
+            self.game.buttons = None
         if self.buttons["02.png"].pressed():
             self.game.soundboard.click()
             self.game.objects,  self.game.background_image, self.game.fires = self.game.level_two.load_level_assets()
             self.menu_state = "play"
+            self.game.buttons = None
         if self.buttons["03.png"].pressed():
             self.game.soundboard.click()
-            #self.game.objects, self.game.background, self.game.background_image, self.game.fires = self.game.level_three.load_level_assets()
-            #self.menu_state = "play"
+            self.game.soundboard.click()
+            self.game.objects,  self.game.background_image, self.game.fires = self.game.level_three.load_level_assets()
+            self.menu_state = "play"
+            self.game.buttons = None
+            self.game.player.start_x = 20
+            self.game.player.start_y = PLATFORM_SIZE * 2
     def load_buttons(self):
         """Loads every button in the game
         """

@@ -20,12 +20,12 @@ class Lvl2():
                 #line 6
                 Fire(51 , HEIGHT_SCREEN - (PLATFORM_SIZE * 5) - 64, 16 ,32, self,90), 
                 #line 7
-                Fire((4 * PLATFORM_SIZE) + (61) , HEIGHT_SCREEN - (PLATFORM_SIZE * 6) - 64, 16 ,32, self), 
-                Fire((4 * PLATFORM_SIZE) + (31) , HEIGHT_SCREEN - (PLATFORM_SIZE * 6) - 64, 16 ,32, self), 
-                Fire((5 * PLATFORM_SIZE) + (61) , HEIGHT_SCREEN - (PLATFORM_SIZE * 6) - 64, 16 ,32, self), 
-                Fire((5 * PLATFORM_SIZE) + (31) , HEIGHT_SCREEN - (PLATFORM_SIZE * 6) - 64, 16 ,32, self),
-                Fire((6 * PLATFORM_SIZE) + (61) , HEIGHT_SCREEN - (PLATFORM_SIZE * 6) - 64, 16 ,32, self), 
-                Fire((6 * PLATFORM_SIZE) + (31) , HEIGHT_SCREEN - (PLATFORM_SIZE * 6) - 64, 16 ,32, self),
+                Fire((4 * PLATFORM_SIZE) + (51) , HEIGHT_SCREEN - (PLATFORM_SIZE * 6) - 64, 16 ,32, self), 
+                Fire((4 * PLATFORM_SIZE) + (21) , HEIGHT_SCREEN - (PLATFORM_SIZE * 6) - 64, 16 ,32, self), 
+                Fire((5 * PLATFORM_SIZE) + (51) , HEIGHT_SCREEN - (PLATFORM_SIZE * 6) - 64, 16 ,32, self), 
+                Fire((5 * PLATFORM_SIZE) + (21) , HEIGHT_SCREEN - (PLATFORM_SIZE * 6) - 64, 16 ,32, self),
+                Fire((6 * PLATFORM_SIZE) + (51) , HEIGHT_SCREEN - (PLATFORM_SIZE * 6) - 64, 16 ,32, self), 
+                Fire((6 * PLATFORM_SIZE) + (21) , HEIGHT_SCREEN - (PLATFORM_SIZE * 6) - 64, 16 ,32, self),
                 ]
         for fire in fires:
             fire.on()

@@ -48,8 +48,7 @@ class Game():
         self.sorted_winning_times = []
         self.timer = Timer(self)
         self.font = Font(self, 3)
-        self.previus_menu = None
-        self.previus_buttons = None
+        self.menu_history = []
     def main(self):
         """Main game loop that sets the FPS for the game and calls all the handling functions,
         calls for the loop() in Player() and calls for draw()
@@ -202,7 +201,7 @@ class Game():
                 self.esc_menu.draw()
                 self.soundboard.music_pause()
                 self.soundboard.music_paused = True
-                self.display_timer(format(self.timer.current_time), 1000 - (20 * 5.2),1)
+                self.display_timer(format(self.timer.current_time - self.timer.start_time), 1000 - (20 * 5.2),1)
             if self.buttons == "death" or self.buttons == "win" or self.buttons == "esc":
                 self.sorted_winning_times = self.sort_time(self.sort_win_time())
             else:
@@ -388,3 +387,26 @@ class Game():
         for letter in text.lower():
             self.window.blit(self.font.letters[letter], (x + (20*i),y))
             i += 1
+
+    #AI made suggestion
+    def navigate_to_menu(self, new_menu_state, new_buttons):
+        """Navigate to a new menu and save current state to history"""
+        # Save current state before navigating
+        self.menu_history.append({
+            'menu_state': self.menu_state,
+            'buttons': self.buttons
+        })
+        
+        # Navigate to new menu
+        self.menu_state = new_menu_state
+        self.buttons = new_buttons
+    
+    # NEW: Method to go back to previous menu
+    def go_back(self):
+        """Go back to the previous menu in history"""
+        if len(self.menu_history) > 0:
+            previous = self.menu_history.pop()  # Get last state and remove it
+            self.menu_state = previous['menu_state']
+            self.buttons = previous['buttons']
+            return True
+        return False  # No history to go back to
