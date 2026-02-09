@@ -13,6 +13,7 @@ from Menus.esc import ESC
 from soundboard import Soundboard
 from Menus.font import Font
 from timer import Timer
+from Menus.pick_level import Pick_Level
 class Game():
     """Basic game object, that other files can reference.
     All the basic loops, event handling happens here
@@ -32,7 +33,8 @@ class Game():
         self.level_two = Lvl2(self)
         self.level_three = Lvl3(self)
         self.esc_menu = ESC(self)
-        self.objects, self.background, self.background_image, self.fires = self.level_two.load_level_assets()
+        self.pick_menu = Pick_Level(self)
+        self.objects, self.background_image, self.fires = self.level_one.load_level_assets()
         self.player_hits = 0
         self.buttons = "start"
         self.menu_state = "start"
@@ -46,7 +48,8 @@ class Game():
         self.sorted_winning_times = []
         self.timer = Timer(self)
         self.font = Font(self, 3)
-        
+        self.previus_menu = None
+        self.previus_buttons = None
     def main(self):
         """Main game loop that sets the FPS for the game and calls all the handling functions,
         calls for the loop() in Player() and calls for draw()
@@ -59,10 +62,6 @@ class Game():
             self.player.loop()
             self.handle_move()
             self.draw()
-            #Background scrolling
-            #if ((self.player.rect.right - self.offset_x >= WIDTH_SCREEN - SCROLL_AREA_WIDTH) and self.player.velocity_x > 0) or (
-            #   (self.player.rect.left - self.offset_x <= SCROLL_AREA_WIDTH) and self.player.velocity_x < 0):
-            #   self.offset_x += self.player.velocity_x
             
     def handle_events(self):
         """Checks if certain events occured and acts upon them.
@@ -75,31 +74,34 @@ class Game():
                 if event.key == pygame.K_SPACE and self.player.jump_count < 2:
                     self.player.jump()
                 if event.key == pygame.K_ESCAPE and self.menu_state == "play":
-                        self.esc_menu.check_pressed()
-                        if pressed:
-                            self.timer.proceed()
-                            pressed = False
-                        else:
-                            self.timer.pause()
-                            pressed = True
-                        if self.soundboard.music_paused:
-                            self.soundboard.music_resume()
-                            self.soundboard.music_paused = False
-
-            if self.buttons == "death":
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                        self.death_menu.resolve_buttons()
-            if self.buttons == "start":
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                        self.start_menu.resolve_buttons()
-            if self.buttons == "win":
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                        self.win_menu.resolve_buttons()
-            
-            if self.buttons == "esc":
-                if event.type == pygame.MOUSEBUTTONDOWN:            
-                        self.esc_menu.resolve_buttons()
-                        
+                    self.buttons = "esc"
+                    self.esc_menu.check_pressed()
+                    if pressed:
+                        self.timer.proceed()
+                        pressed = False
+                    else:
+                        self.timer.pause()
+                        pressed = True
+                    if self.soundboard.music_paused:
+                        self.soundboard.music_resume()
+                        self.soundboard.music_paused = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.buttons == "death":
+                    self.death_menu.resolve_buttons()
+            if event.type == pygame.MOUSEBUTTONDOWN:            
+                if self.buttons == "start":
+                    self.start_menu.resolve_buttons()
+            if event.type == pygame.MOUSEBUTTONDOWN:            
+                if self.buttons == "win":
+                    self.win_menu.resolve_buttons()
+                    
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.buttons == "esc":
+                    self.esc_menu.resolve_buttons()
+                    
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.buttons == "pick":
+                    self.pick_menu.resolve_buttons()
             
             
     def get_background(self, name):
@@ -116,15 +118,15 @@ class Game():
         
         #Set the size based on the image
         _,_,width, height = image.get_rect()
-        tiles = []
         
+        background_surface = pygame.Surface((WIDTH_SCREEN, HEIGHT_SCREEN))
         #Calculation of how many tiles is needed to fill the screen and whats their position
         for i in range(WIDTH_SCREEN // width + 1):
             for j in range(HEIGHT_SCREEN // height + 1):
                 position = (i * width, j * height)
-                tiles.append(position)
+                background_surface.blit(image, position)
         
-        return tiles, image
+        return background_surface
 
     def draw(self):
         """Draws every asset in the game
@@ -133,9 +135,11 @@ class Game():
         
         if self.menu_state == "start":
             self.start_menu.draw()
+        if self.menu_state == "pick_level":
+            self.buttons = "pick"
+            self.pick_menu.draw()
         
         elif self.menu_state == "play":
-            
             if not self.soundboard.music_playing:
                 self.soundboard.music_on()
                 self.soundboard.music_playing = True
@@ -143,8 +147,7 @@ class Game():
             for fire in self.fires:
                 fire.update_sprite()
             
-            for tile in self.background:
-                self.window.blit(self.background_image,tile)
+            self.window.blit(self.background_image,(0,0))
             
             for object in self.objects:
                 object.draw()

@@ -7,6 +7,8 @@ class Font():
     def __init__(self, game, scale):
         self.scale = scale
         self.game = game
+        
+        self.letter_cache = {}
 
         row_1 = self.get_font("abcdefghij",0)
         row_2 = self.get_font("klmnopqrst",10)
@@ -30,17 +32,24 @@ class Font():
         Returns:
             Surface()
         """
+        cache_key = (width, height, name, position_x, position_y, scale, directory)
+        if cache_key in self.letter_cache:
+            return self.letter_cache[cache_key]
         
         path = join("assets", *directory, name)
         image = pygame.image.load(path).convert_alpha()
-        surface = pygame.Surface((width, height), pygame.SRCALPHA, 32)
+        surface = pygame.Surface((width, height), pygame.SRCALPHA, 32).convert_alpha()
         rect = pygame.Rect(position_x, position_y, width, height)
         surface.blit(image, (0,0), rect)
         
         if scale:
+            self.letter_cache[cache_key] = pygame.transform.scale(surface, (width * scale, height * scale))
             return pygame.transform.scale(surface, (width * scale, height * scale))
+            
         else:
+            self.letter_cache[cache_key] = surface
             return surface
+            
     
     def get_font(self, text, y):
         letters = {}

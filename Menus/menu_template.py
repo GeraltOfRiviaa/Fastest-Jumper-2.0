@@ -60,42 +60,72 @@ class Menu():
     def resolve_buttons(self):
         """Resolves all button presses
         """
-        for _ in self.buttons:
-            if self.buttons["Close.png"].pressed():
-                self.game.running = False
-                self.game.soundboard.click()
-            if self.buttons["Volume.png"].pressed():
-                self.game.soundboard.click()
-            if self.buttons["Back.png"].pressed():
-                self.game.soundboard.click()
-            if self.buttons["Achievements.png"].pressed():
-                self.game.soundboard.click()
-            if self.buttons["Levels.png"].pressed():
-                self.game.soundboard.click()
-            if self.buttons["Next.png"].pressed():
-                self.game.soundboard.click()
-            if self.buttons["Play.png"].pressed():
-                self.game.menu_state = "play"
-                self.game.buttons = None
-                self.game.soundboard.click()
-                self.game.timer.start()
-                if self.game.soundboard.music_paused:
-                            self.game.soundboard.music_resume()
-                            self.game.soundboard.music_paused = False
-                self.game.player.gravity = True
-            if self.buttons["Previous.png"].pressed():
-                self.game.soundboard.click()
-            if self.buttons["Restart.png"].pressed():
-                self.game.menu_state = "play"
-                self.game.player.reset()
-                self.game.buttons = None
-                self.game.soundboard.click()
-                self.game.soundboard.music_on()
-                self.game.soundboard.reset()
-                self.game.timer.deactivate()
-                self.game.timer.start()
-            if self.buttons["Settings.png"].pressed():
-                self.game.soundboard.click()
+    
+        if self.buttons["Close.png"].pressed():
+            self.game.running = False
+            self.game.soundboard.click()
+            
+        if self.buttons["Volume.png"].pressed():
+            self.game.soundboard.click()
+            
+        if self.buttons["Back.png"].pressed():
+            self.game.soundboard.click()
+            self.game.menu_state = self.game.previus_menu
+            self.game.buttons = self.game.previus_buttons
+            
+        if self.buttons["Achievements.png"].pressed():
+            self.game.soundboard.click()
+            
+        if self.buttons["Levels.png"].pressed():
+            self.game.soundboard.click()
+            self.game.previus_menu = self.game.menu_state
+            self.game.previus_buttons = self.game.buttons
+            self.game.menu_state = "pick_level"
+            self.game.buttons = "pick"
+            
+        if self.buttons["Next.png"].pressed():
+            self.game.soundboard.click()
+            
+        if self.buttons["Play.png"].pressed():
+            self.game.previus_buttons = self.game.buttons
+            self.game.menu_state = "play"
+            self.game.buttons = None
+            self.game.soundboard.click()
+            self.game.timer.start()
+            if self.game.soundboard.music_paused:
+                        self.game.soundboard.music_resume()
+                        self.game.soundboard.music_paused = False
+            self.game.player.gravity = True
+            
+        if self.buttons["Previous.png"].pressed():
+            self.game.soundboard.click()
+            
+        if self.buttons["Restart.png"].pressed():
+            self.game.previus_buttons = self.game.buttons
+            self.game.menu_state = "play"
+            self.game.player.reset()
+            self.game.buttons = None
+            self.game.soundboard.click()
+            self.game.soundboard.music_on()
+            self.game.soundboard.reset()
+            self.game.timer.deactivate()
+            self.game.timer.start()
+            
+        if self.buttons["Settings.png"].pressed():
+            self.game.soundboard.click()
+            
+        if self.buttons["01.png"].pressed():
+            self.game.soundboard.click()
+            self.game.objects, self.game.background_image, self.game.fires = self.game.level_one.load_level_assets()
+            self.menu_state = "play"
+        if self.buttons["02.png"].pressed():
+            self.game.soundboard.click()
+            self.game.objects,  self.game.background_image, self.game.fires = self.game.level_two.load_level_assets()
+            self.menu_state = "play"
+        if self.buttons["03.png"].pressed():
+            self.game.soundboard.click()
+            #self.game.objects, self.game.background, self.game.background_image, self.game.fires = self.game.level_three.load_level_assets()
+            #self.menu_state = "play"
     def load_buttons(self):
         """Loads every button in the game
         """
@@ -103,12 +133,19 @@ class Menu():
         buttons = {} 
         for file in listdir(path_one) :
             if isfile(join(path_one, file)):
-                buttons[file] =  Button(0,0, self.load_image(21,22, file,0,0, 3,"Menu", "Buttons"), self.game)
+                buttons[file] =  Button(-100,-100, self.load_image(21,22, file,0,0, 3,"Menu", "Buttons"), self.game)
 
         path_two = "assets/Menu/Buttons/Smaller"
         for file in listdir(path_two) :
             if isfile(join(path_two, file)):
-                buttons[file] =  Button(0,0, self.load_image(21,22, file,0,0, 2,"Menu", "Buttons", "Smaller"), self.game)
+                buttons[file] =  Button(-100,-100, self.load_image(15,16, file,0,0, 2,"Menu", "Buttons", "Smaller"), self.game)
             
-
+        path_two = "assets/Menu/Levels"
+        for file in listdir(path_two) :
+            if isfile(join(path_two, file)):
+                buttons[file] =  Button(-100,-100, self.load_image(19,17, file,0,0, 2,"Menu", "Levels"), self.game)
+            
+        
         return buttons
+    
+    

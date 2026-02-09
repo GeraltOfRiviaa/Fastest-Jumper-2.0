@@ -1,7 +1,6 @@
 import pygame
 from settings import WIDTH_SCREEN, HEIGHT_SCREEN, WORD_SPACING
 from Menus.menu_template import Menu
-from Menus.button import Button
 
 
 class ESC(Menu):
@@ -10,13 +9,23 @@ class ESC(Menu):
         self.game = game
         self.image.set_alpha(200)
         self.close = self.buttons["Close.png"]
-        self.close.rect.topleft = (0,0)
+        self.close.rect.topleft = (1000 - (1 + 38), 1)
+        
         self.play = self.buttons["Play.png"]
-        self.play.rect.topleft = (WIDTH_SCREEN/2,HEIGHT_SCREEN/2 + 21)
+        self.play.rect.topleft = ((WIDTH_SCREEN/2) + (21*2),HEIGHT_SCREEN/2 + 21)
+        
         self.volume = self.buttons["Volume.png"]
         self.volume.rect.topleft = (1000 - (21 * 3),1)
+        
         self.restart = self.buttons["Restart.png"]
-        self.restart.rect.topleft = (WIDTH_SCREEN/2 - (3*21) ,HEIGHT_SCREEN/2 + 21)
+        self.restart.rect.topleft = (WIDTH_SCREEN/2 - (1*21) ,HEIGHT_SCREEN/2 + 21)
+        
+        self.back = self.buttons["Back.png"]
+        self.back.rect.topleft = (0,0)
+        
+        self.pick = self.buttons["Levels.png"]
+        self.pick.rect.topleft = ((WIDTH_SCREEN/2 - 21) ,600)
+        
         self.pressed = False
                         
 
@@ -28,6 +37,7 @@ class ESC(Menu):
         self.close.draw(self.game.window)
         self.play.draw(self.game.window)
         self.restart.draw(self.game.window)
+        self.back.draw(self.game.window)
         self.display_text("you", (WIDTH_SCREEN/2) - (3.5*80) - 40 , 200, "h1")
         self.display_text("good?",(WIDTH_SCREEN/2) - (0.5 * 80), 200, "h1")
 
@@ -37,5 +47,6 @@ class ESC(Menu):
             self.game.menu_state = "play"
             self.game.buttons = None
         else:
+            self.game.previus_buttons = self.game.buttons
             self.game.buttons = "esc"
             self.pressed = True

@@ -11,7 +11,7 @@ class Lvl1():
         self.window = game.window
         
     def load_level_assets(self):
-        background, background_image = self.game.get_background("Yellow.png")
+        background_image = self.game.get_background("Yellow.png")
         
         fires = [Fire((8 * PLATFORM_SIZE) + 51 , HEIGHT_SCREEN - PLATFORM_SIZE - 64, 16 ,32, self), # 8x 2y
                  Fire((9 * PLATFORM_SIZE) + 51 , HEIGHT_SCREEN - PLATFORM_SIZE - 64, 16 ,32, self), # 9x 2y
@@ -49,4 +49,4 @@ class Lvl1():
         #trophy = Trophy((2 * PLATFORM_SIZE),HEIGHT_SCREEN - (PLATFORM_SIZE * 2) + (64/2), 64,64, self)
         objects = [*floor, *fires, *floating_platforms, trophy]
         
-        return objects, background, background_image, fires
+        return objects, background_image, fires

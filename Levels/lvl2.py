@@ -10,7 +10,7 @@ class Lvl2():
         self.game = game
         self.window = game.window
     def load_level_assets(self):
-        background, background_image = self.game.get_background("Green.png")
+        background_image = self.game.get_background("Green.png")
         
         fires = [
                 #line 3 
@@ -75,4 +75,4 @@ class Lvl2():
         
         
         
-        return objects, background, background_image, fires
+        return objects, background_image, fires
