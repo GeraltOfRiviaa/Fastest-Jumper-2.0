@@ -82,6 +82,7 @@ class Menu():
                 if self.game.soundboard.music_paused:
                             self.game.soundboard.music_resume()
                             self.game.soundboard.music_paused = False
+                self.game.player.gravity = True
             if self.buttons["Previous.png"].pressed():
                 self.game.soundboard.click()
             if self.buttons["Restart.png"].pressed():
@@ -91,6 +92,7 @@ class Menu():
                 self.game.soundboard.click()
                 self.game.soundboard.music_on()
                 self.game.soundboard.reset()
+                self.game.timer.deactivate()
                 self.game.timer.start()
             if self.buttons["Settings.png"].pressed():
                 self.game.soundboard.click()

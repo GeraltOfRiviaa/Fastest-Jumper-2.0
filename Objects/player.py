@@ -23,19 +23,7 @@ class Player(Object):
         self.start_x = x
         self.start_y = y
         self.on_ground = False
-        
-    def will_hit(self):
-        self.move(self.velocity_x, 0)
-        self.update()
-        ground = False
-        for object in self.game.objects:
-            if pygame.sprite.collide_mask(self, object):
-                ground = True
-                break
-        
-        self.move(-self.velocity_x, 0)
-        self.update()
-        return ground
+        self.gravity = False
         
     def jump(self):
         self.velocity_y = -GRAVITY * JUMP_STRENGTH
@@ -82,10 +70,8 @@ class Player(Object):
     def loop(self):
         """Applies the gravity and updates movement and sprites for the Player()
         """
-        #if not self.will_hit():
-        #    self.velocity_y += min(1, (self.fall_count/ FPS) * GRAVITY)
-        
-        self.velocity_y += min(1, (self.fall_count/ FPS) * GRAVITY)
+        if self.gravity:
+            self.velocity_y += min(1, (self.fall_count/ FPS) * GRAVITY)
         self.move(self.velocity_x,self.velocity_y)
         self.fall_count += 1
         
@@ -111,21 +97,20 @@ class Player(Object):
         
         if self.hit:
             sprite_sheet = "hit"
-        elif self.velocity_y < 0:
+        elif self.velocity_y < 0 :
+            
             if self.jump_count == 1:
                 sprite_sheet = "jump"
             elif self.jump_count == 2:
                 sprite_sheet = "double_jump"
+            self.on_ground = False
         elif self.velocity_y > GRAVITY * 2:
             sprite_sheet = "fall"
+            self.game.soundboard.landing_played = False
+            self.on_ground = False
         elif self.velocity_x != 0:
             sprite_sheet = "run"
-        #if self.dissapear:
-        #    sprite_sheet = "Desappearing (96x96)"
-        #    sprite_sheet_name = sprite_sheet
-        #    sprites = self.dissapear_sprites[sprite_sheet_name]
-        #else:
-        #    
+        
         sprite_sheet_name = sprite_sheet + "_" + self.direction
         sprites = self.sprites[sprite_sheet_name]
         sprite_index = (self.animation_count // ANIMATION_DELAY) % len(sprites)
@@ -143,8 +128,9 @@ class Player(Object):
         self.fall_count = 0
         self.velocity_y = 0
         self.jump_count = 0
-        self.on_ground = True
-        #self.game.soundboard.jump_landing()
+        if not self.game.soundboard.landing_played:
+            self.game.soundboard.landing()
+            self.game.soundboard.landing_played = True
     def hit_head(self):
         self.count = 0
         self.velocity_y *= -1
@@ -166,9 +152,3 @@ class Player(Object):
         self.game.player_won = False
         self.on_ground = False
         self.game.time_saved = False
-    
-    def gravity_off(self):
-        return None
-    
-    def gravity_on(self):
-        self.velocity_y += min(1, (self.fall_count/ FPS) * GRAVITY)

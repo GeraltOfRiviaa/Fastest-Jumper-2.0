@@ -45,7 +45,6 @@ class Game():
         self.sorted_death_times = []
         self.sorted_winning_times = []
         self.timer = Timer(self)
-        self.start_time = 0
         self.font = Font(self, 3)
         
     def main(self):
@@ -81,7 +80,7 @@ class Game():
                             self.timer.proceed()
                             pressed = False
                         else:
-                            self.timer.stop()
+                            self.timer.pause()
                             pressed = True
                         if self.soundboard.music_paused:
                             self.soundboard.music_resume()
@@ -136,6 +135,7 @@ class Game():
             self.start_menu.draw()
         
         elif self.menu_state == "play":
+            
             if not self.soundboard.music_playing:
                 self.soundboard.music_on()
                 self.soundboard.music_playing = True
@@ -150,11 +150,12 @@ class Game():
                 object.draw()
             
             if self.player.rect.y > HEIGHT_SCREEN:
+                
                 if not self.time_saved:
                     self.save_time("death")
                     self.time_saved = True
                     self.sorted_death_times = self.sort_time(self.sort_death_time())
-
+                self.timer.deactivate()
                 self.buttons = "death"
                 self.death_menu.draw()
                 if not self.soundboard.game_over_played:
@@ -163,11 +164,12 @@ class Game():
                 self.soundboard.music_off()
                 self.display_timer(format(self.get_latest_time()), 1000 - (20 * 5.2),1)
             if self.player_hits > 2:
+                
                 if not self.time_saved:
                     self.save_time("death")
                     self.time_saved = True
                     self.sorted_death_times = self.sort_time(self.sort_death_time())
-                    
+                self.timer.deactivate()
 
                 self.buttons = "death"
                 self.death_menu.draw()
@@ -179,11 +181,12 @@ class Game():
                 self.display_timer(format(self.get_latest_time()), 1000 - (20 * 5.2),1)
             
             if self.player_won:
+                
                 if not self.time_saved:
                     self.save_time("win")
                     self.time_saved = True
                     self.sorted_winning_times = self.sort_time(self.sort_win_time())
-                    
+                self.timer.deactivate()
                 self.buttons = "win"
                 self.win_menu.draw()
                 if not self.soundboard.trophy_played:
@@ -200,7 +203,7 @@ class Game():
             if self.buttons == "death" or self.buttons == "win" or self.buttons == "esc":
                 self.sorted_winning_times = self.sort_time(self.sort_win_time())
             else:
-                self.display_timer("{:.2f}".format(self.timer.current_time), 1000 - (20 * 5.2),1)
+                self.display_timer("{:.2f}".format(self.timer.current_time - self.timer.start_time), 1000 - (20 * 5.2),1)
             self.player.draw()
             
             
@@ -257,10 +260,11 @@ class Game():
                 if velocity_y > 0:
                     self.player.rect.bottom = object.rect.top
                     self.player.landed()
+                    self.player.on_ground = False
                 elif velocity_y < 0:
                     self.player.rect.top = object.rect.bottom
                     self.player.hit_head()
-                    
+                    self.player.on_ground = False
                 collided_objects.append(object)
         return collided_objects
     
@@ -291,7 +295,7 @@ class Game():
     def save_time(self, state):
         
         with open("run_times.txt", "a") as file:
-            file.write("{:.2f}".format(self.timer.current_time) + " " + state)
+            file.write("{:.2f}".format(self.timer.stop()) + " " + state)
             file.write("\n")
         
 

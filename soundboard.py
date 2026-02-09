@@ -12,6 +12,7 @@ class Soundboard():
         self.trophy_played = False
         self.music_playing = False
         self.music_paused = False
+        self.landing_played = False
         
     def load_sounds(self):
         path = "Sound_Effects/WAV"
@@ -34,7 +35,7 @@ class Soundboard():
     def game_over(self):
         self.sounds["game_over.wav"].play()
     
-    def jump_landing(self):
+    def landing(self):
         self.sounds["jump_landing_short.wav"].play()
     
     def jump(self):
