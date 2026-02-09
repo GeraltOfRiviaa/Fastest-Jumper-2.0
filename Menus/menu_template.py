@@ -97,13 +97,13 @@ class Menu():
     def load_buttons(self):
         """Loads every button in the game
         """
-        path_one = "C:/Users/SAM/Desktop/Fastest Jumper 2.0/assets/Menu/Buttons"
+        path_one = "assets/Menu/Buttons"
         buttons = {} 
         for file in listdir(path_one) :
             if isfile(join(path_one, file)):
                 buttons[file] =  Button(0,0, self.load_image(21,22, file,0,0, 3,"Menu", "Buttons"), self.game)
 
-        path_two = "C:/Users/SAM/Desktop/Fastest Jumper 2.0/assets/Menu/Buttons/Smaller"
+        path_two = "assets/Menu/Buttons/Smaller"
         for file in listdir(path_two) :
             if isfile(join(path_two, file)):
                 buttons[file] =  Button(0,0, self.load_image(21,22, file,0,0, 2,"Menu", "Buttons", "Smaller"), self.game)

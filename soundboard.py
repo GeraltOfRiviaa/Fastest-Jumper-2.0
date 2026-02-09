@@ -6,7 +6,7 @@ class Soundboard():
     def __init__(self, game):
         self.game = game
         self.sounds = self.load_sounds()
-        pygame.mixer.music.load("C:/Users/SAM/Desktop/Fastest Jumper 2.0/Music/track1.mp3")
+        pygame.mixer.music.load("Music/track1.mp3")
         pygame.mixer.music.set_volume(0.5)
         self.game_over_played = False
         self.trophy_played = False
@@ -14,7 +14,7 @@ class Soundboard():
         self.music_paused = False
         
     def load_sounds(self):
-        path = "C:/Users/SAM/Desktop/Fastest Jumper 2.0/Sound_Effects/WAV"
+        path = "Sound_Effects/WAV"
         sounds = {}
         for sound in listdir(path):
             if isfile(join(path, sound)):
