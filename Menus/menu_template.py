@@ -112,11 +112,15 @@ class Menu():
             self.game.objects, self.game.background_image, self.game.fires = self.game.level_one.load_level_assets()
             self.menu_state = "play"
             self.game.buttons = None
+            self.game.player.start_x = 20
+            self.game.player.start_y = PLATFORM_SIZE * 8
         if self.buttons["02.png"].pressed():
             self.game.soundboard.click()
             self.game.objects,  self.game.background_image, self.game.fires = self.game.level_two.load_level_assets()
             self.menu_state = "play"
             self.game.buttons = None
+            self.game.player.start_x = 20
+            self.game.player.start_y = PLATFORM_SIZE * 8
         if self.buttons["03.png"].pressed():
             self.game.soundboard.click()
             self.game.soundboard.click()

@@ -24,7 +24,7 @@ class Game():
         pygame.SCALED
         self.running = True
         self.clock = pygame.time.Clock()
-        self.player = Player(60, HEIGHT_SCREEN - (PLATFORM_SIZE*2), PLAYER_WIDTH, PLAYER_HEIGHT, self)
+        self.player = Player(20, PLATFORM_SIZE*8, PLAYER_WIDTH, PLAYER_HEIGHT, self)
         self.offset_x = 0
         self.death_menu = Death(self)
         self.start_menu = Start(self)
@@ -187,7 +187,7 @@ class Game():
                 if not self.time_saved:
                     self.save_time("win")
                     self.time_saved = True
-                    self.sorted_winning_times = self.sort_time(self.sort_win_time())
+                    self.sorted_winning_times = self.sort_time(self.sort_win_time(), False)
                 self.timer.deactivate()
                 self.buttons = "win"
                 self.win_menu.draw()
@@ -203,7 +203,7 @@ class Game():
                 self.soundboard.music_paused = True
                 self.display_timer(format(self.timer.current_time - self.timer.start_time), 1000 - (20 * 5.2),1)
             if self.buttons == "death" or self.buttons == "win" or self.buttons == "esc":
-                self.sorted_winning_times = self.sort_time(self.sort_win_time())
+                self.sorted_winning_times = self.sort_time(self.sort_win_time(), False)
             else:
                 self.display_timer("{:.2f}".format(self.timer.current_time - self.timer.start_time), 1000 - (20 * 5.2),1)
             self.player.draw()

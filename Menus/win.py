@@ -11,7 +11,7 @@ class Win(Menu):
         self.image.set_alpha(200)
         
         self.close = self.buttons["Close.png"]
-        self.close.rect.topleft = (0,0)
+        self.close.rect.topleft = (1000 - 30,1)
         
         self.restart = self.buttons["Restart.png"]
         self.restart.rect.topleft = ((WIDTH_SCREEN/2 - 21) - (21 * 2),HEIGHT_SCREEN/2 + 21)
@@ -20,7 +20,7 @@ class Win(Menu):
         self.pick.rect.topleft = ((WIDTH_SCREEN/2 - 21) + (21 * 2), HEIGHT_SCREEN/2 + 21)
         
         self.back = self.buttons["Back.png"]
-        self.back.rect.topleft = ((WIDTH_SCREEN/2 - 21) - (21 * 2) ,HEIGHT_SCREEN/2 + 21)
+        self.back.rect.topleft = (0 ,0)
     def draw(self):
         """
         Draws the death menu on the screen
